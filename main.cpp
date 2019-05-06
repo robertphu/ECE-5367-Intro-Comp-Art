@@ -79,12 +79,10 @@ int main()
 			}
 
 			else if ((flag == 3)) {
-				//cout << "CODE FOUND ";
-				cout << temp << '\t';
+				//cout << "CODE FOUND ";				
 				//Load all code into array of strings
 				CODE_STRING[index_code] = temp;
-				index_code++;
-				cout << endl;
+				index_code++;				
 			}
 			else if (temp.compare("REGISTERS") == 1) flag = 1;
 			else if (temp.compare("MEMORY") == 1) flag = 2;
@@ -103,9 +101,6 @@ int main()
 		clock_cycle++;
 		//load first line of code using program counter
 		current_instruction = CODE_STRING[program_counter];
-		//increment program counter
-		program_counter++;
-		//checks if current line is an instruction
 
 		outfile << "C#" << clock_cycle << " I" << instruction_count << "-IF" << endl;
 		//INSTRUCTION DECODE + REGISTER READ//////////////////////////////////////////////////////////////////
@@ -262,7 +257,7 @@ int main()
 			MEMORY[temporary_storage] = REGISTERS[rt];
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-MEM" << endl;
-
+			program_counter++;
 			break;
 		}
 	
@@ -280,6 +275,7 @@ int main()
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-WB" << endl;
 			instruction_count++;
+			program_counter++;
 			break;
 
 		case 2:
@@ -288,6 +284,7 @@ int main()
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-WB" << endl;
 			instruction_count++;
+			program_counter++;
 			break;
 		
 		case 5: 
@@ -296,6 +293,7 @@ int main()
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-WB" << endl;
 			instruction_count++;
+			program_counter++;
 			break;
 		}
 
@@ -320,12 +318,6 @@ int main()
 	}
 	
 	outfile.close();
-
-
-	//string test;
-	//getline(cin, test);
-
-    //std::cout << test; 	
 }
 
 void stringsplit(string input, string& output1, string& output2){
