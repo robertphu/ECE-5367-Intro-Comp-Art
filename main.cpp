@@ -1,6 +1,8 @@
 // Robert Phu 1091357
 // Simulation of a multi-cycle un-pipelined MIPS processor
-// compiles on linux with g++ -std=c++11 main.cpp
+// compiles on windows microsoft visual studio community
+// for some reason str.compare() works slightly diffrent in windows/linux.
+// might be the getline() command
 
 
 #include <iostream>
@@ -17,7 +19,7 @@ void stringsplit(string input, string& output1, string& output2);
 
 int main()
 {
-	
+
 	ifstream infile;
 	string infilename;
 	string temp;
@@ -25,7 +27,7 @@ int main()
 	string temp1;
 	string temp2;
 	//Allocate array for $R0-$R31 and memory from 0-996
-	int REGISTERS[32]  = { 0 };
+	int REGISTERS[32] = { 0 };
 	int MEMORY[250] = { 0 };
 	int clock_cycle = 0;
 	int instruction_count = 1;
@@ -36,18 +38,18 @@ int main()
 	int instructiondecode;
 	int instdecode_num;
 	int instruction_type = 0;
-	int rd, rs, rt, funct,imm,base;
+	int rd, rs, rt, funct, imm, base;
 	int temporary_storage;
 	bool stringmatch;
 
 
 	//Ask user for input file
 	cout << "Please enter input file name.\n";
-	getline(cin, infilename);
-	//infilename = "./input";
+	//getline(cin, infilename);
+	infilename = "input.txt";
 	infile.open(infilename);
 	ofstream outfile;
-	outfile.open("output");
+	outfile.open("output.txt");
 
 	//code to parse input file
 	if (infile.is_open())
@@ -57,19 +59,19 @@ int main()
 			//Code to parse Registers/Memory/Code from file.
 			cout << temp << endl;
 			//Register Values
-			if ((flag == 1) && (temp.compare("MEMORY") != 1)) {
+			if ((flag == 1) && (temp.compare("MEMORY") != 0)) {
 				//cout << "REGISTER FOUND ";
 				//Split line into two seperate strings
-				stringsplit(temp, temp1, temp2);			
+				stringsplit(temp, temp1, temp2);
 				//Delete R from string to use as index
-				temp1.erase(0, 1);				
-				int register_index = stoi(temp1, nullptr, 0);				
+				temp1.erase(0, 1);
+				int register_index = stoi(temp1, nullptr, 0);
 				int register_value = stoi(temp2, nullptr, 0);
 				REGISTERS[register_index] = register_value;
 				//cout << "REGISTER R" << register_index << " has " << REGISTERS[register_index] << endl;
 			}
 			// Memory Values
-			else if ((flag == 2) && (temp.compare("CODE") != 1)) {
+			else if ((flag == 2) && (temp.compare("CODE") != 0)) {
 				//Split line into two seperate strings
 				stringsplit(temp, temp1, temp2);
 				int mem_location = stoi(temp1, nullptr, 0) / 4;
@@ -82,12 +84,12 @@ int main()
 				//cout << "CODE FOUND ";				
 				//Load all code into array of strings
 				CODE_STRING[index_code] = temp;
-				index_code++;				
+				index_code++;
 			}
-			else if (temp.compare("REGISTERS") == 1) flag = 1;
-			else if (temp.compare("MEMORY") == 1) flag = 2;
-			else if (temp.compare("CODE") == 1) flag = 3;
-			
+			else if (temp.compare("REGISTERS") == 0) flag = 1;
+			else if (temp.compare("MEMORY") == 0) flag = 2;
+			else if (temp.compare("CODE") == 0) flag = 3;
+
 		}
 		infile.close();
 	}
@@ -163,7 +165,7 @@ int main()
 			break;
 
 			//I-Type SW
-		case 53:
+		case 43:
 			instruction_type = 6;
 			base = stoi(current_instruction.substr(6, 5), nullptr, 2);
 			rt = stoi(current_instruction.substr(11, 5), nullptr, 2);
@@ -207,7 +209,7 @@ int main()
 			//I-Type BEQ
 		case 3:
 			if (REGISTERS[rs] == REGISTERS[rt]) {
-				program_counter += imm;
+				program_counter += imm/4;
 			}
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-EX" << endl;
@@ -217,13 +219,13 @@ int main()
 			//I-Type BNE
 		case 4:
 			if (REGISTERS[rs] != REGISTERS[rt]) {
-				program_counter += imm;
+				program_counter += imm/4;
 			}
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-EX" << endl;
 			instruction_count++;
 			break;
-		
+
 			//I-Type LW
 		case 5:
 			temporary_storage = (imm / 4) + (base / 4);
@@ -260,7 +262,7 @@ int main()
 			program_counter++;
 			break;
 		}
-	
+
 
 		//WRITE BACK TO REGISTER////////////////////////////////////////////////////////////
 		switch (instruction_type) {
@@ -286,8 +288,8 @@ int main()
 			instruction_count++;
 			program_counter++;
 			break;
-		
-		case 5: 
+
+		case 5:
 			//I-Type LW
 			REGISTERS[rt] = temporary_storage;
 			clock_cycle++;
@@ -313,14 +315,14 @@ int main()
 	outfile << endl << endl << "MEMORY" << endl;
 	for (int x = 0; x < 250; x++) {
 		if (MEMORY[x] != 0) {
-			outfile << x*4 << ' ' << REGISTERS[x] << endl;
+			outfile << x * 4 << ' ' << MEMORY[x] << endl;
 		}
 	}
-	
+
 	outfile.close();
 }
 
-void stringsplit(string input, string& output1, string& output2){
+void stringsplit(string input, string& output1, string& output2) {
 	//simple function to split string in half with space delimiter
 	int position = 0;
 	string delimiter = " ";
@@ -328,7 +330,7 @@ void stringsplit(string input, string& output1, string& output2){
 
 	while ((position = input.find(delimiter)) != string::npos) {
 		output1 = input.substr(0, position);
-		input.erase(0, position + delimiter.length());    
+		input.erase(0, position + delimiter.length());
 		output2 = input;
 	}
 }
