@@ -163,7 +163,7 @@ int main()
 			break;
 
 			//I-Type SW
-		case 53:
+		case 43:
 			instruction_type = 6;
 			base = stoi(current_instruction.substr(6, 5), nullptr, 2);
 			rt = stoi(current_instruction.substr(11, 5), nullptr, 2);
@@ -207,7 +207,7 @@ int main()
 			//I-Type BEQ
 		case 3:
 			if (REGISTERS[rs] == REGISTERS[rt]) {
-				program_counter += imm;
+				program_counter += imm/4;
 			}
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-EX" << endl;
@@ -217,7 +217,7 @@ int main()
 			//I-Type BNE
 		case 4:
 			if (REGISTERS[rs] != REGISTERS[rt]) {
-				program_counter += imm;
+				program_counter += imm/4;
 			}
 			clock_cycle++;
 			outfile << "C#" << clock_cycle << " I" << instruction_count << "-EX" << endl;
@@ -313,7 +313,7 @@ int main()
 	outfile << endl << endl << "MEMORY" << endl;
 	for (int x = 0; x < 250; x++) {
 		if (MEMORY[x] != 0) {
-			outfile << x*4 << ' ' << REGISTERS[x] << endl;
+			outfile << x*4 << ' ' << MEMORY[x] << endl;
 		}
 	}
 	
