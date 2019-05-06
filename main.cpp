@@ -1,6 +1,6 @@
 // Robert Phu 1091357
 // Simulation of a multi-cycle un-pipelined MIPS processor
-// compiles on linux with g++ -std=c+11
+// compiles on linux with g++ -std=c++11 main.cpp
 
 
 #include <iostream>
@@ -13,7 +13,6 @@
 #include <ctype.h>
 using namespace std;
 
-bool is_number(const std::string& s);
 void stringsplit(string input, string& output1, string& output2);
 
 int main()
@@ -30,12 +29,10 @@ int main()
 	int MEMORY[250] = { 0 };
 	int clock_cycle = 0;
 	int instruction_count = 1;
-	//int CODE[250];
 	string CODE_STRING[250];
 	int index_code = 0;
 	int program_counter = 0;
 	string current_instruction;
-	bool isinstruction;	
 	int instructiondecode;
 	int instdecode_num;
 	int instruction_type = 0;
@@ -45,9 +42,9 @@ int main()
 
 
 	//Ask user for input file
-	//cout << "Please enter input file name.\n";
-	//getline(cin, test);
-	infilename = "./input";
+	cout << "Please enter input file name.\n";
+	getline(cin, infilename);
+	//infilename = "./input";
 	infile.open(infilename);
 	ofstream outfile;
 	outfile.open("output");
@@ -61,16 +58,15 @@ int main()
 			cout << temp << endl;
 			//Register Values
 			if ((flag == 1) && (temp.compare("MEMORY") != 1)) {
-				cout << "REGISTER FOUND ";
+				//cout << "REGISTER FOUND ";
 				//Split line into two seperate strings
 				stringsplit(temp, temp1, temp2);			
 				//Delete R from string to use as index
-				temp1.erase(0, 1);
-				cout << temp1 << '+' << temp2 << endl; 
+				temp1.erase(0, 1);				
 				int register_index = stoi(temp1, nullptr, 0);				
 				int register_value = stoi(temp2, nullptr, 0);
 				REGISTERS[register_index] = register_value;
-				cout << "REGISTER R" << register_index << " has " << REGISTERS[register_index] << endl;
+				//cout << "REGISTER R" << register_index << " has " << REGISTERS[register_index] << endl;
 			}
 			// Memory Values
 			else if ((flag == 2) && (temp.compare("CODE") != 1)) {
@@ -79,7 +75,7 @@ int main()
 				int mem_location = stoi(temp1, nullptr, 0) / 4;
 				int mem_value = stoi(temp2, nullptr, 0);
 				MEMORY[mem_location] = mem_value;
-				cout << "MEMORY " << mem_location << " has " << MEMORY[mem_location] << endl;
+				//cout << "MEMORY " << mem_location << " has " << MEMORY[mem_location] << endl;
 			}
 
 			else if ((flag == 3)) {
@@ -88,12 +84,7 @@ int main()
 				//Load all code into array of strings
 				CODE_STRING[index_code] = temp;
 				index_code++;
-				//Chech if code is in binary
-				/*if (is_number(temp)) {
-					CODE[index_code] = stoi(temp);
-					cout << "CODE IS A NUMBER!" << endl;
-				}
-				else*/ cout << endl;
+				cout << endl;
 			}
 			else if (temp.compare("REGISTERS") == 1) flag = 1;
 			else if (temp.compare("MEMORY") == 1) flag = 2;
@@ -115,7 +106,6 @@ int main()
 		//increment program counter
 		program_counter++;
 		//checks if current line is an instruction
-		isinstruction = is_number(current_instruction);
 
 		outfile << "C#" << clock_cycle << " I" << instruction_count << "-IF" << endl;
 		//INSTRUCTION DECODE + REGISTER READ//////////////////////////////////////////////////////////////////
@@ -337,14 +327,6 @@ int main()
 
     //std::cout << test; 	
 }
-
-
-bool is_number(const std::string& s)
-{
-	std::string::const_iterator it = s.begin();
-	while (it != s.end() && isdigit(*it)) ++it;
-	return !s.empty() && it == s.end();
-} 
 
 void stringsplit(string input, string& output1, string& output2){
 	//simple function to split string in half with space delimiter
